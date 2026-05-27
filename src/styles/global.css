@@ -3,58 +3,57 @@
    ============================================ */
 
 :root {
-  /* Dark theme (default) */
-  --bg: #0d1117;
-  --bg-2: #1a2332;
-  --ink: #e8eef5;
-  --ink-dim: #8b9bb0;
-  --accent: #50fa7b;
-  --accent-2: #ff79c6;
-  --accent-3: #8be9fd;
-  --warn: #ffb86c;
-  --line: rgba(232, 238, 245, 0.1);
-  --card: rgba(255, 255, 255, 0.03);
-  --grad-bg1: rgba(255, 121, 198, 0.13);
-  --grad-bg2: rgba(80, 250, 123, 0.10);
-  --result-bg1: rgba(80, 250, 123, 0.10);
-  --result-bg2: rgba(139, 233, 253, 0.05);
-  --ok-bg: rgba(80, 250, 123, 0.15);
-  --bad-bg: rgba(255, 121, 198, 0.13);
-  --bad-ink: #ffaadc;
-  --shadow-glow: rgba(80, 250, 123, 0.15);
-  --svg-bg: rgba(139, 233, 253, 0.05);
-  --svg-stroke: rgba(139, 233, 253, 0.3);
-  --svg-cutout: #0d1117;
-  --coil-fill: rgba(255, 121, 198, 0.1);
-  --input-bg: rgba(0, 0, 0, 0.3);
-  --select-bg: rgba(0, 0, 0, 0.4);
+  --bg:          #1a1510;
+  --bg-2:        #221d17;
+  --ink:         #f0e8d8;
+  --ink-dim:     #9a8878;
+  --accent:      #e07b30;
+  --accent-2:    #f5a55a;
+  --accent-3:    #ffd199;
+  --warn:        #e04040;
+  --line:        rgba(240, 232, 216, 0.08);
+  --card:        rgba(255, 255, 255, 0.03);
+  --grad-bg1:    rgba(224, 123, 48, 0.10);
+  --grad-bg2:    rgba(224, 123, 48, 0.04);
+  --result-bg1:  rgba(224, 123, 48, 0.10);
+  --result-bg2:  rgba(224, 123, 48, 0.04);
+  --ok-bg:       rgba(224, 123, 48, 0.14);
+  --bad-bg:      rgba(224, 64, 64, 0.12);
+  --bad-ink:     #f08080;
+  --shadow-glow: rgba(224, 123, 48, 0.20);
+  --svg-bg:      rgba(224, 123, 48, 0.06);
+  --svg-stroke:  rgba(224, 123, 48, 0.30);
+  --svg-cutout:  #1a1510;
+  --coil-fill:   rgba(224, 123, 48, 0.12);
+  --input-bg:    rgba(255, 255, 255, 0.05);
+  --select-bg:   rgba(255, 255, 255, 0.07);
 }
 
 body.light {
-  --bg: #faf8f3;
-  --bg-2: #eee8db;
-  --ink: #1a1a1a;
-  --ink-dim: #5a6275;
-  --accent: #0d8a4c;
-  --accent-2: #c9277d;
-  --accent-3: #1d8eb0;
-  --warn: #c5500a;
-  --line: rgba(26, 26, 26, 0.12);
-  --card: rgba(255, 255, 255, 0.7);
-  --grad-bg1: rgba(201, 39, 125, 0.06);
-  --grad-bg2: rgba(13, 138, 76, 0.06);
-  --result-bg1: rgba(13, 138, 76, 0.08);
-  --result-bg2: rgba(29, 142, 176, 0.04);
-  --ok-bg: rgba(13, 138, 76, 0.12);
-  --bad-bg: rgba(201, 39, 125, 0.10);
-  --bad-ink: #a01f63;
-  --shadow-glow: rgba(13, 138, 76, 0.18);
-  --svg-bg: rgba(29, 142, 176, 0.04);
-  --svg-stroke: rgba(29, 142, 176, 0.35);
-  --svg-cutout: #faf8f3;
-  --coil-fill: rgba(201, 39, 125, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.7);
-  --select-bg: rgba(255, 255, 255, 0.7);
+  --bg:          #fdf8f2;
+  --bg-2:        #f5ede0;
+  --ink:         #1c1208;
+  --ink-dim:     #6b5040;
+  --accent:      #c85e10;
+  --accent-2:    #e07b30;
+  --accent-3:    #a04808;
+  --warn:        #c03030;
+  --line:        rgba(28, 18, 8, 0.12);
+  --card:        rgba(255, 255, 255, 0.70);
+  --grad-bg1:    rgba(200, 94, 16, 0.07);
+  --grad-bg2:    rgba(200, 94, 16, 0.03);
+  --result-bg1:  rgba(200, 94, 16, 0.08);
+  --result-bg2:  rgba(200, 94, 16, 0.03);
+  --ok-bg:       rgba(200, 94, 16, 0.10);
+  --bad-bg:      rgba(192, 48, 48, 0.09);
+  --bad-ink:     #a03020;
+  --shadow-glow: rgba(200, 94, 16, 0.18);
+  --svg-bg:      rgba(200, 94, 16, 0.05);
+  --svg-stroke:  rgba(200, 94, 16, 0.30);
+  --svg-cutout:  #fdf8f2;
+  --coil-fill:   rgba(200, 94, 16, 0.10);
+  --input-bg:    rgba(255, 255, 255, 0.80);
+  --select-bg:   rgba(255, 255, 255, 0.80);
 }
 
 * {
@@ -86,12 +85,11 @@ body {
    ============================================ */
 
 .container {
-  max-width: 520px;
+  max-width: 540px;
   margin: 0 auto;
   padding: 28px 20px 80px;
 }
 
-/* Desktop: wider layout with sidebar feeling */
 @media (min-width: 900px) {
   .container {
     max-width: 1100px;
@@ -99,19 +97,19 @@ body {
   }
   .practice-layout {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 28px;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
     align-items: start;
   }
   .practice-layout .problem-select {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     position: sticky;
     top: 20px;
   }
   .practice-layout .problem-select .pbtn {
     flex: 0 0 auto;
-    padding: 16px 18px;
+    padding: 14px 16px;
     text-align: left;
     font-size: 12px;
   }
@@ -126,7 +124,6 @@ body {
   .container {
     max-width: 1280px;
   }
-  /* Two-column inside cards for desktop */
   .card.has-two-cols {
     display: grid;
     grid-template-columns: 1.05fr 1fr;
@@ -163,7 +160,7 @@ header {
 .eyebrow {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 8px;
@@ -180,22 +177,22 @@ h1 {
 
 h1 .alt {
   font-style: normal;
-  color: var(--accent-2);
+  color: var(--accent);
 }
 
 .sub {
   color: var(--ink-dim);
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 10px;
-  line-height: 1.5;
+  line-height: 1.55;
   font-family: 'JetBrains Mono', monospace;
 }
 
 /* Theme toggle */
 .theme-toggle {
   flex-shrink: 0;
-  width: 56px;
-  height: 30px;
+  width: 54px;
+  height: 28px;
   background: var(--input-bg);
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -210,14 +207,14 @@ h1 .alt {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   background: var(--accent);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   transition: transform 0.25s ease;
   box-shadow: 0 2px 6px var(--shadow-glow);
 }
@@ -233,17 +230,17 @@ body.light .theme-toggle::before {
 
 .mode-tabs {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 5px;
+  border-radius: 12px;
+  padding: 4px;
   margin-bottom: 18px;
 }
 
 .mbtn {
   flex: 1;
-  padding: 12px 8px;
+  padding: 11px 8px;
   background: transparent;
   border: none;
   color: var(--ink-dim);
@@ -251,14 +248,14 @@ body.light .theme-toggle::before {
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border-radius: 10px;
+  border-radius: 9px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 600;
 }
 
 .mbtn.active {
-  background: var(--accent-3);
+  background: var(--accent);
   color: var(--bg);
   font-weight: 800;
 }
@@ -269,17 +266,17 @@ body.light .theme-toggle::before {
 
 .problem-select {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 5px;
+  border-radius: 12px;
+  padding: 4px;
   margin-bottom: 20px;
 }
 
 .pbtn {
   flex: 1;
-  padding: 13px 6px;
+  padding: 12px 6px;
   background: transparent;
   border: none;
   color: var(--ink-dim);
@@ -287,7 +284,7 @@ body.light .theme-toggle::before {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-radius: 10px;
+  border-radius: 9px;
   cursor: pointer;
   transition: all 0.2s ease;
   line-height: 1.3;
@@ -302,7 +299,7 @@ body.light .theme-toggle::before {
 .pbtn small {
   display: block;
   font-size: 9px;
-  opacity: 0.7;
+  opacity: 0.75;
   margin-top: 2px;
 }
 
@@ -313,15 +310,15 @@ body.light .theme-toggle::before {
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 20px 18px;
   margin-bottom: 16px;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
 }
 
 @media (min-width: 900px) {
   .card {
-    padding: 28px 26px;
+    padding: 26px 24px;
   }
 }
 
@@ -329,7 +326,7 @@ body.light .theme-toggle::before {
   display: inline-block;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  background: var(--accent-2);
+  background: var(--accent);
   color: var(--bg);
   padding: 3px 10px;
   border-radius: 999px;
@@ -340,7 +337,7 @@ body.light .theme-toggle::before {
 
 .card-title {
   font-family: 'Fraunces', serif;
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.15;
   margin-bottom: 8px;
@@ -349,28 +346,23 @@ body.light .theme-toggle::before {
 
 @media (min-width: 900px) {
   .card-title {
-    font-size: 26px;
+    font-size: 24px;
   }
 }
 
 .card-desc {
   color: var(--ink-dim);
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.55;
   margin-bottom: 14px;
-}
-
-@media (min-width: 900px) {
-  .card-desc {
-    font-size: 14px;
-  }
+  font-family: 'JetBrains Mono', monospace;
 }
 
 details {
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 9px 13px;
+  border-radius: 8px;
+  padding: 8px 12px;
   margin-bottom: 14px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -393,7 +385,7 @@ details[open] summary::after { content: " ▴"; }
 
 details .frm {
   display: block;
-  color: var(--accent);
+  color: var(--accent-2);
   padding: 3px 0;
 }
 
@@ -404,7 +396,7 @@ details .frm {
 .anim-wrap {
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 14px;
   margin-bottom: 16px;
   display: flex;
@@ -420,12 +412,8 @@ details .frm {
 }
 
 @media (min-width: 1200px) {
-  .anim-wrap {
-    min-height: 240px;
-  }
-  .anim-wrap svg {
-    max-width: 460px;
-  }
+  .anim-wrap { min-height: 220px; }
+  .anim-wrap svg { max-width: 440px; }
 }
 
 /* ============================================
@@ -454,7 +442,7 @@ details .frm {
 
 .control-head .value-display {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--accent);
   font-weight: 700;
 }
@@ -472,17 +460,21 @@ input[type="range"] {
   min-width: 0;
   -webkit-appearance: none;
   appearance: none;
-  height: 5px;
-  background: var(--select-bg);
+  height: 4px;
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 999px;
   outline: none;
+}
+
+body.light input[type="range"] {
+  background: rgba(0, 0, 0, 0.12);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
@@ -490,8 +482,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   background: var(--accent);
   border: none;
   border-radius: 50%;
@@ -505,7 +497,7 @@ input[type="number"] {
   background: var(--input-bg);
   border: 1px solid var(--line);
   color: var(--ink);
-  padding: 9px 6px;
+  padding: 8px 6px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   border-radius: 8px;
@@ -528,12 +520,12 @@ select {
   background: var(--select-bg);
   border: 1px solid var(--line);
   color: var(--ink);
-  padding: 9px 22px 9px 8px;
+  padding: 8px 22px 8px 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   border-radius: 8px;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b9bb0' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a8878' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 6px center;
   background-size: 12px;
@@ -543,7 +535,7 @@ select {
 }
 
 body.light select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a6275' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b5040' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
 select:focus {
@@ -557,10 +549,10 @@ select:focus {
 
 .live-result {
   margin-top: 18px;
-  padding: 18px;
-  background: linear-gradient(135deg, var(--result-bg1), var(--result-bg2));
-  border: 1px solid var(--accent);
-  border-radius: 14px;
+  padding: 16px 18px;
+  background: var(--result-bg1);
+  border: 1px solid rgba(224, 123, 48, 0.35);
+  border-radius: 12px;
 }
 
 .live-label {
@@ -577,22 +569,21 @@ select:focus {
 
 .live-label::before {
   content: '';
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background: var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent);
   animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.25; }
 }
 
 .main-result {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.1;
@@ -601,9 +592,7 @@ select:focus {
 }
 
 @media (min-width: 900px) {
-  .main-result {
-    font-size: 32px;
-  }
+  .main-result { font-size: 34px; }
 }
 
 .main-result .unit {
@@ -613,26 +602,26 @@ select:focus {
 }
 
 @media (min-width: 900px) {
-  .main-result .unit {
-    font-size: 18px;
-  }
+  .main-result .unit { font-size: 18px; }
 }
 
 .aux-grid {
   display: grid;
-  gap: 5px;
+  gap: 0;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-size: 11.5px;
   padding-top: 10px;
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid rgba(224, 123, 48, 0.20);
 }
 
 .aux-grid .row {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--line);
 }
 
+.aux-grid .row:last-child { border-bottom: none; }
 .aux-grid .lbl { color: var(--ink-dim); }
 .aux-grid .val { color: var(--ink); }
 
@@ -645,7 +634,7 @@ select:focus {
   padding: 14px;
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .lbl-mini {
@@ -671,11 +660,11 @@ select:focus {
 
 .btn {
   width: 100%;
-  padding: 12px;
-  background: var(--accent-3);
+  padding: 11px;
+  background: var(--accent);
   color: var(--bg);
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   font-weight: 700;
@@ -683,15 +672,17 @@ select:focus {
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 10px;
+  transition: opacity 0.15s;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  opacity: 0.85;
+  transform: scale(0.99);
 }
 
 .btn-reset {
   width: auto;
-  padding: 9px 14px;
+  padding: 8px 14px;
   background: transparent;
   color: var(--ink-dim);
   border: 1px solid var(--line);
@@ -717,12 +708,12 @@ select:focus {
 .check-result.ok {
   background: var(--ok-bg);
   border: 1px solid var(--accent);
-  color: var(--accent);
+  color: var(--accent-2);
 }
 
 .check-result.bad {
   background: var(--bad-bg);
-  border: 1px solid var(--accent-2);
+  border: 1px solid var(--warn);
   color: var(--bad-ink);
 }
 
@@ -738,7 +729,7 @@ select:focus {
 }
 
 .theory-nav button {
-  padding: 8px 14px;
+  padding: 7px 14px;
   background: var(--input-bg);
   border: 1px solid var(--line);
   color: var(--ink-dim);
@@ -748,28 +739,34 @@ select:focus {
   text-transform: uppercase;
   border-radius: 999px;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.theory-nav button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .theory-nav button.active {
-  background: var(--accent-2);
+  background: var(--accent);
   color: var(--bg);
-  border-color: var(--accent-2);
+  border-color: var(--accent);
   font-weight: 700;
 }
 
 .theory-card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 22px 20px;
   margin-bottom: 16px;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
 }
 
 @media (min-width: 900px) {
   .theory-card {
     padding: 36px 40px;
-    max-width: 780px;
+    max-width: 760px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -781,26 +778,25 @@ select:focus {
   font-weight: 700;
   line-height: 1.15;
   margin-bottom: 14px;
-  color: var(--accent);
+  color: var(--accent-2);
   letter-spacing: -0.01em;
 }
 
 @media (min-width: 900px) {
-  .theory-card h2 { font-size: 30px; }
+  .theory-card h2 { font-size: 28px; }
 }
 
 .theory-card h3 {
   font-family: 'Fraunces', serif;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   margin-top: 22px;
   margin-bottom: 8px;
-  color: var(--accent-2);
-  letter-spacing: -0.005em;
+  color: var(--accent-3);
 }
 
 @media (min-width: 900px) {
-  .theory-card h3 { font-size: 20px; }
+  .theory-card h3 { font-size: 18px; }
 }
 
 .theory-card p,
@@ -812,7 +808,7 @@ select:focus {
 }
 
 @media (min-width: 900px) {
-  .theory-card p, .theory-card li { font-size: 15px; line-height: 1.7; }
+  .theory-card p, .theory-card li { font-size: 15px; }
 }
 
 .theory-card ul,
@@ -825,11 +821,11 @@ select:focus {
 
 .theory-card .fnote {
   background: var(--input-bg);
-  border-left: 3px solid var(--accent-3);
+  border-left: 3px solid var(--accent);
   padding: 12px 14px;
-  border-radius: 6px;
+  border-radius: 0 6px 6px 0;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--ink);
   margin: 12px 0;
   line-height: 1.7;
@@ -837,14 +833,15 @@ select:focus {
 
 .theory-card .fnote .formula {
   display: block;
-  color: var(--accent);
+  color: var(--accent-2);
   font-weight: 700;
   padding: 4px 0;
+  font-size: 13px;
 }
 
 .theory-card .key {
   background: var(--ok-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(224, 123, 48, 0.35);
   border-radius: 10px;
   padding: 14px 16px;
   margin: 16px 0;
@@ -853,24 +850,24 @@ select:focus {
   color: var(--ink);
 }
 
-.theory-card .key b { color: var(--accent); }
+.theory-card .key b { color: var(--accent-2); }
 .theory-card strong { color: var(--accent-2); font-weight: 700; }
 .theory-card em { color: var(--accent-3); font-style: normal; font-weight: 600; }
 
 .theory-card .ex-box {
   background: var(--input-bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 14px;
   margin: 10px 0;
 }
 
 .theory-card .ex-box .ex-title {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--accent-2);
+  color: var(--accent);
   margin-bottom: 8px;
   font-weight: 700;
 }
@@ -883,7 +880,7 @@ select:focus {
 
 .coil-fill {
   fill: var(--coil-fill);
-  stroke: var(--accent-2);
+  stroke: var(--accent);
   stroke-width: 2;
 }
 
@@ -925,18 +922,18 @@ select:focus {
 .footer-version {
   font-size: 9px;
   color: var(--ink-dim);
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .footer-author {
   font-size: 11px;
   font-weight: 700;
   color: var(--ink-dim);
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 .footer-inst {
   font-size: 10px;
   color: var(--accent);
-  opacity: 0.7;
+  opacity: 0.65;
 }
