@@ -20,10 +20,9 @@ export default function App() {
   const [theme, setTheme] = useState(
     () => localStorage.getItem('u7-theme') || 'dark'
   );
-  const [mode, setMode] = useState('practica'); // 'practica' | 'teoria'
+  const [mode, setMode] = useState('practica');
   const [problem, setProblem] = useState('p1');
 
-  // Aplicar tema al body
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light');
@@ -31,16 +30,13 @@ export default function App() {
       document.body.classList.remove('light');
     }
     localStorage.setItem('u7-theme', theme);
-    // Actualizar meta theme-color (color de la barra de status del browser)
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
       meta.setAttribute('content', theme === 'light' ? '#faf8f3' : '#0d1117');
     }
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
-  };
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
@@ -90,7 +86,17 @@ export default function App() {
 
       {mode === 'teoria' && <TheoryView />}
 
-      <footer>v 1.0 · React · 3 problemas + teoría · Guía 7 · Inducción</footer>
+      <footer className="app-footer">
+        <span className="footer-version">
+          v 1.0 · Física II · Unidad 7 · Inducción
+        </span>
+        <span className="footer-author">
+          Gomez Geneiro, Maximiliano Nahuel
+        </span>
+        <span className="footer-inst">
+          UTN · FRRe · 2026
+        </span>
+      </footer>
     </div>
   );
 }

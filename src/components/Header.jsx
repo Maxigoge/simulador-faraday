@@ -13,7 +13,7 @@ export default function Header({ theme, onToggleTheme }) {
       <div className="header-row">
         <div style={{ flex: 1 }}>
           <div className="eyebrow">
-            Física II · Guía 7 · Inducción electromagnética
+            Física II · Unidad 7 · Inducción electromagnética
           </div>
           <h1>
             fara<span className="alt">/</span>day<span className="alt">.</span>

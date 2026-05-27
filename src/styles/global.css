@@ -898,13 +898,39 @@ select:focus {
 
 .hidden { display: none; }
 
-footer {
-  text-align: center;
-  margin-top: 30px;
-  color: var(--ink-dim);
+/* ============================================
+   Footer
+   ============================================ */
+
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
   text-transform: uppercase;
-  opacity: 0.4;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.footer-version {
+  font-size: 9px;
+  color: var(--ink-dim);
+  opacity: 0.5;
+}
+
+.footer-author {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  opacity: 0.8;
+}
+
+.footer-inst {
+  font-size: 10px;
+  color: var(--accent);
+  opacity: 0.7;
 }
