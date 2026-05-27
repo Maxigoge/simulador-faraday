@@ -189,7 +189,6 @@ h1 .alt {
   margin-top: 10px;
   line-height: 1.5;
   font-family: 'JetBrains Mono', monospace;
-  max-width: 600px;
 }
 
 /* Theme toggle */
@@ -462,12 +461,15 @@ details .frm {
 
 .slider-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  min-width: 0;
+  width: 100%;
 }
 
 input[type="range"] {
   flex: 1;
+  min-width: 0;
   -webkit-appearance: none;
   appearance: none;
   height: 5px;
@@ -497,11 +499,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 input[type="number"] {
-  width: 85px;
+  width: 72px;
+  min-width: 0;
+  flex-shrink: 0;
   background: var(--input-bg);
   border: 1px solid var(--line);
   color: var(--ink);
-  padding: 9px 10px;
+  padding: 9px 6px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   border-radius: 8px;
@@ -524,16 +528,18 @@ select {
   background: var(--select-bg);
   border: 1px solid var(--line);
   color: var(--ink);
-  padding: 9px 26px 9px 10px;
+  padding: 9px 22px 9px 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   border-radius: 8px;
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b9bb0' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 8px center;
+  background-position: right 6px center;
   background-size: 12px;
-  min-width: 70px;
+  min-width: 60px;
+  max-width: 72px;
+  flex-shrink: 0;
 }
 
 body.light select {
