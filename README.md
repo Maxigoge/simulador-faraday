@@ -26,11 +26,6 @@ Se eligieron los 3 problemas más simples para que el verificador tenga sentido 
 
 Las explicaciones detalladas de cada problema (paso a paso, "idea para explicar al profesor") están en la sección **Teoría** de la app.
 
-### Unidades ya ocupadas (no usar)
-- Unidad 3 (Capacidad y condensadores)
-- Unidad 4 (Electrocinética)
-- Unidad 9 (Corriente alterna)
-
 ---
 
 ## Stack técnico
@@ -228,9 +223,6 @@ Si modificás las fórmulas y querés re-verificar, los `useMemo` de cada proble
 Este proyecto pasó por varias iteraciones:
 
 1. **HTML+CSS+JS vanilla simple** — primer mockup con 2 temas (Ohm y capacitores).
-2. **Guía 4 (electrocinética)** — verificador con 3 problemas (1, 5, 7). Descartado porque otro alumno la usó.
-3. **Guía 3 (capacidad)** — verificador con 3 problemas (4, 6, 9). Descartado igual.
-4. **Guía 7 (inducción)** — versión final con 3 problemas (1, 2, 3) elegidos por simplicidad y didáctica.
-5. **Sliders dinámicos** — todo recalcula en vivo al mover sliders.
-6. **Modo claro + teoría** — toggle de tema y sección completa de explicaciones.
-7. **React + responsive** — versión actual: refactor a React/Vite, layout adaptativo móvil y escritorio.
+2. **Sliders dinámicos** — todo recalcula en vivo al mover sliders.
+3. **Modo claro + teoría** — toggle de tema y sección completa de explicaciones.
+4. **React + responsive** — versión actual: refactor a React/Vite, layout adaptativo móvil y escritorio.
