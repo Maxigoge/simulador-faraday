@@ -16,11 +16,11 @@ const PROBLEMS = [
   { id: 'p3', short: 'P3', label: 'dB/dt → I',  Component: Problem3 },
 ];
 
-// Namespace único para este proyecto
-// countapi.xyz — gratuito, sin registro, crea el contador en la primera llamada
+// Contador usando hits.sh — CORS abierto, gratuito, sin registro
+// La URL incluye el dominio como identificador único
 const COUNTER_NAMESPACE = 'simulador-faraday-utn';
 const COUNTER_KEY = 'visitas';
-const COUNTER_URL = `https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
+const COUNTER_URL = `https://hits.sh/${COUNTER_NAMESPACE}-${COUNTER_KEY}.json`;
 
 export default function App() {
   const [theme, setTheme] = useState(
@@ -44,29 +44,25 @@ export default function App() {
     }
   }, [theme]);
 
-  // Contador de visitas — se incrementa una sola vez por sesión
+  // Contador de visitas — hits.sh, CORS abierto
   useEffect(() => {
-    const hitUrl = `https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
-    const getUrl = `https://api.countapi.xyz/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
+    // hits.sh: GET a la URL incrementa Y devuelve { total, today }
+    // No hay endpoint separado para leer sin incrementar, pero es aceptable
+    // para un contador de visitas simple
+    if (sessionStorage.getItem('counted')) return; // ya contamos esta sesión
 
-    const parseCount = (data) => data?.value ?? data?.count ?? null;
-
-    if (sessionStorage.getItem('counted')) {
-      // Ya contó esta sesión — solo leer sin incrementar
-      fetch(getUrl)
-        .then((r) => r.json())
-        .then((data) => { const c = parseCount(data); if (c !== null) setVisits(c); })
-        .catch(() => {});
-    } else {
-      fetch(hitUrl)
-        .then((r) => r.json())
-        .then((data) => {
-          const c = parseCount(data);
-          if (c !== null) setVisits(c);
-          sessionStorage.setItem('counted', '1');
-        })
-        .catch(() => {});
-    }
+    fetch(COUNTER_URL)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data) => {
+        // hits.sh devuelve { total: N, today: N }
+        const count = data?.total ?? data?.value ?? data?.count ?? null;
+        if (count !== null) setVisits(count);
+        sessionStorage.setItem('counted', '1');
+      })
+      .catch((err) => console.warn('[contador]', err.message));
   }, []);
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
