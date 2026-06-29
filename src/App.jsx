@@ -16,13 +16,21 @@ const PROBLEMS = [
   { id: 'p3', short: 'P3', label: 'dB/dt → I',  Component: Problem3 },
 ];
 
+// Namespace único para este proyecto
+// countapi.xyz — gratuito, sin registro, crea el contador en la primera llamada
+const COUNTER_NAMESPACE = 'simulador-faraday-utn';
+const COUNTER_KEY = 'visitas';
+const COUNTER_URL = `https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
+
 export default function App() {
   const [theme, setTheme] = useState(
     () => localStorage.getItem('u7-theme') || 'dark'
   );
   const [mode, setMode] = useState('practica');
   const [problem, setProblem] = useState('p1');
+  const [visits, setVisits] = useState(null);
 
+  // Aplicar tema al body
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light');
@@ -35,6 +43,31 @@ export default function App() {
       meta.setAttribute('content', theme === 'light' ? '#faf8f3' : '#0d1117');
     }
   }, [theme]);
+
+  // Contador de visitas — se incrementa una sola vez por sesión
+  useEffect(() => {
+    const hitUrl = `https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
+    const getUrl = `https://api.countapi.xyz/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`;
+
+    const parseCount = (data) => data?.value ?? data?.count ?? null;
+
+    if (sessionStorage.getItem('counted')) {
+      // Ya contó esta sesión — solo leer sin incrementar
+      fetch(getUrl)
+        .then((r) => r.json())
+        .then((data) => { const c = parseCount(data); if (c !== null) setVisits(c); })
+        .catch(() => {});
+    } else {
+      fetch(hitUrl)
+        .then((r) => r.json())
+        .then((data) => {
+          const c = parseCount(data);
+          if (c !== null) setVisits(c);
+          sessionStorage.setItem('counted', '1');
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
@@ -96,6 +129,11 @@ export default function App() {
         <span className="footer-inst">
           UTN · FRRe · 2026
         </span>
+        {visits !== null && (
+          <span className="footer-visits">
+            {visits.toLocaleString()} visitas
+          </span>
+        )}
       </footer>
     </div>
   );
