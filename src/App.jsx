@@ -26,7 +26,7 @@ export default function App() {
   );
   const [mode, setMode] = useState('practica');
   const [problem, setProblem] = useState('p1');
-  const [visits, setVisits] = useState(null);
+  const [visits, setVisits] = useState('...');
 
   // Aplicar tema al body
   useEffect(() => {
@@ -53,7 +53,10 @@ export default function App() {
         if (count !== null) setVisits(count);
         sessionStorage.setItem('counted', '1');
       })
-      .catch((err) => console.warn('[contador]', err.message));
+      .catch((err) => {
+        console.warn('[contador]', err.message);
+        setVisits('sin datos de visitas');
+      });
   }, []);
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
@@ -67,7 +70,7 @@ export default function App() {
 
   return (
     <div className="container">
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header theme={theme} onToggleTheme={toggleTheme} visits={visits} />
 
       <div className="mode-tabs">
         <button
@@ -116,11 +119,6 @@ export default function App() {
         <span className="footer-inst">
           UTN · FRRe · 2026
         </span>
-        {visits !== null && (
-          <span className="footer-visits">
-            {visits.toLocaleString()} visitas
-          </span>
-        )}
       </footer>
     </div>
   );
