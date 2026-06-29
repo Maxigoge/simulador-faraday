@@ -16,11 +16,9 @@ const PROBLEMS = [
   { id: 'p3', short: 'P3', label: 'dB/dt → I',  Component: Problem3 },
 ];
 
-// Contador usando hits.sh — CORS abierto, gratuito, sin registro
-// La URL incluye el dominio como identificador único
-const COUNTER_NAMESPACE = 'simulador-faraday-utn';
-const COUNTER_KEY = 'visitas';
-const COUNTER_URL = `https://hits.sh/${COUNTER_NAMESPACE}-${COUNTER_KEY}.json`;
+// Contador — llama a nuestra propia Serverless Function en Vercel
+// Esto evita CORS porque el browser llama a su propio dominio
+const COUNTER_URL = '/api/visitas';
 
 export default function App() {
   const [theme, setTheme] = useState(
@@ -44,21 +42,14 @@ export default function App() {
     }
   }, [theme]);
 
-  // Contador de visitas — hits.sh, CORS abierto
+  // Contador de visitas — llama a /api/visitas (Serverless Function)
   useEffect(() => {
-    // hits.sh: GET a la URL incrementa Y devuelve { total, today }
-    // No hay endpoint separado para leer sin incrementar, pero es aceptable
-    // para un contador de visitas simple
-    if (sessionStorage.getItem('counted')) return; // ya contamos esta sesión
+    if (sessionStorage.getItem('counted')) return;
 
     fetch(COUNTER_URL)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
+      .then((r) => r.json())
       .then((data) => {
-        // hits.sh devuelve { total: N, today: N }
-        const count = data?.total ?? data?.value ?? data?.count ?? null;
+        const count = data?.count ?? null;
         if (count !== null) setVisits(count);
         sessionStorage.setItem('counted', '1');
       })
