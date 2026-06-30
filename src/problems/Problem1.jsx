@@ -6,15 +6,8 @@ import BFieldDots from '../components/BFieldDots.jsx';
 import GraphLegend from '../components/GraphLegend.jsx';
 
 const DEFAULTS = {
-  N: 50,
-  a: 5,         // cm
-  aUnit: 0.01,
-  b: 10,        // cm
-  bUnit: 0.01,
-  B: 0.5,       // T
-  BUnit: 1,
-  dt: 0.25,     // s
-  dtUnit: 1,
+  N: 50, a: 5, aUnit: 0.01, b: 10, bUnit: 0.01,
+  B: 0.5, BUnit: 1, dt: 0.25, dtUnit: 1,
 };
 
 const FEM_UNITS = [
@@ -54,36 +47,40 @@ export default function Problem1() {
     setDt(DEFAULTS.dt); setDtUnit(DEFAULTS.dtUnit);
   };
 
-  // SVG — mapeo lineal slider → px
-  const aMeters = parseFloat(a) * aUnit || 0.05;
-  const bMeters = parseFloat(b) * bUnit || 0.10;
-  const aClamp = Math.min(Math.max(aMeters, 0.005), 0.50);
-  const bClamp = Math.min(Math.max(bMeters, 0.005), 0.50);
-  const wpx = 16 + ((aClamp - 0.005) / (0.50 - 0.005)) * (130 - 16);
-  const hpx = 16 + ((bClamp - 0.005) / (0.50 - 0.005)) * (110 - 16);
-
-  // Líneas internas proporcionales a N
+  // SVG dims
+  const aClamp = Math.min(Math.max(parseFloat(a) * aUnit || 0.05, 0.005), 0.50);
+  const bClamp = Math.min(Math.max(parseFloat(b) * bUnit || 0.10, 0.005), 0.50);
+  const wpx = 16 + ((aClamp - 0.005) / 0.495) * (120 - 16);
+  const hpx = 16 + ((bClamp - 0.005) / 0.495) * (100 - 16);
   const nLines = Math.min(Math.max(Math.round(parseFloat(N) / 10), 1), 12);
 
-  // Duración de la animación según Δt (0.01s→0.4s rápido, 5s→4s lento)
-  const dtSI = parseFloat(dt) * dtUnit || 0.25;
-  // Duración total = tiempo proporcional a Δt + 2s fijos de pausa
-  // Δt chico (0.01s) → 0.4s de movimiento + 2s pausa = 2.4s total
-  // Δt grande (5s)   → 4.0s de movimiento + 2s pausa = 6.0s total
-  const dtClamp = Math.min(Math.max(dtSI, 0.01), 5);
-  const moveDuration = 0.4 + ((dtClamp - 0.01) / (5 - 0.01)) * (4.0 - 0.4);
-  const animDuration = (moveDuration + 2.0).toFixed(2);
-
-  // Intensidad proporcional al rango real del slider (0 a 5T → 0 a 1)
   const BSI = parseFloat(BField) * BUnit || 0;
   const fieldIntensity = Math.min(BSI / 5, 1);
 
-  // Posiciones fijas de la animación — independientes del tamaño de la bobina.
-  // La bobina siempre arranca centrada en la zona izquierda y termina en la derecha.
-  // Un clipPath evita que se vea fuera del SVG si la bobina es muy grande.
-  const coilStartX = 90;   // centro X inicio (zona B=0)
-  const coilEndX   = 270;  // centro X fin    (zona con B)
-  const cy = 100;          // centro Y fijo
+  const dtSI = parseFloat(dt) * dtUnit || 0.25;
+  const dtClamp = Math.min(Math.max(dtSI, 0.01), 5);
+  // moveDuration = tiempo que tarda en cruzar (proporcional a Δt)
+  const moveDuration = 0.4 + ((dtClamp - 0.01) / 4.99) * 3.6;
+  // pausaDentro = tiempo que permanece adentro SIN fem (para mostrar que no hay variación)
+  const pausaDentro = 1.5;
+  // total = cruzando + adentro_quieta + reset
+  const totalDuration = (moveDuration + pausaDentro + 1.0).toFixed(2);
+
+  // Porcentajes del ciclo:
+  // 0% → empieza a moverse desde B=0
+  // cruzandoPct% → termina de cruzar la línea (fem activa durante este tramo)
+  // dentroStartPct% → está adentro, flujo constante, SIN fem
+  // resetPct% → desaparece y vuelve al inicio
+  const total = parseFloat(totalDuration);
+  const cruzandoPct  = (moveDuration / total * 100).toFixed(1);
+  const dentroEndPct = ((moveDuration + pausaDentro) / total * 100).toFixed(1);
+  const resetPct     = ((moveDuration + pausaDentro + 0.3) / total * 100).toFixed(1);
+  const reaparecePct = ((moveDuration + pausaDentro + 0.7) / total * 100).toFixed(1);
+
+  const coilStartX = 90;
+  const coilEndX   = 270;
+  const cy = 100;
+  const travel = coilEndX - coilStartX;
 
   return (
     <div className="card has-two-cols">
@@ -92,13 +89,15 @@ export default function Problem1() {
         <h2 className="card-title">Bobina rectangular cae en un campo</h2>
         <p className="card-desc">
           Una bobina de N vueltas cae desde donde B=0 hasta una zona con B
-          perpendicular a su plano. Calcular la fem promedio inducida.
+          perpendicular a su plano. La fem se induce <strong>solo mientras cruza</strong> la
+          frontera — una vez adentro el flujo es constante y la fem es cero.
         </p>
         <details>
           <summary>Fórmula</summary>
           <span className="frm">A = a · b</span>
-          <span className="frm">ΔΦ = B · A   (por espira, ΔB = B − 0)</span>
+          <span className="frm">ΔΦ = B · A   (ΔB = B − 0, mientras cruza)</span>
           <span className="frm">ε = N · ΔΦ / Δt = N·B·A/Δt</span>
+          <span className="frm">ε = 0 cuando la bobina está completamente adentro</span>
         </details>
       </div>
 
@@ -106,119 +105,112 @@ export default function Problem1() {
         <div className="anim-wrap">
           <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <clipPath id="svgClip">
+              <clipPath id="p1-clip">
                 <rect x="0" y="0" width="380" height="200" />
               </clipPath>
             </defs>
 
-            {/* ── Zona sin campo (izquierda) ── */}
-            <rect x="0" y="0" width="180" height="200"
-              fill="var(--svg-bg)" opacity="0.3" />
-            <text x="90" y="18" className="lbl-svg" textAnchor="middle" opacity="0.6">
-              B = 0
-            </text>
+            {/* Zona B = 0 */}
+            <rect x="0" y="0" width="180" height="200" fill="var(--svg-bg)" opacity="0.3" />
+            <text x="90" y="18" className="lbl-svg" textAnchor="middle" opacity="0.6">B = 0</text>
 
-            {/* ── Zona con campo B (derecha) ── */}
+            {/* Zona con campo */}
             <rect className="field-bg" x="180" y="0" width="200" height="200"
               strokeWidth="1" strokeDasharray="3 3" />
-            <BFieldDots
-              intensity={fieldIntensity}
-              animate={true}
-              animationDuration={parseFloat(animDuration) * 0.6}
-              cols={5}
-              rows={5}
-              startX={210}
-              startY={40}
-              stepX={35}
-              stepY={30}
-            />
+            <BFieldDots intensity={fieldIntensity} animate={true}
+              animationDuration={parseFloat(totalDuration) * 0.5}
+              cols={5} rows={5} startX={210} startY={40} stepX={35} stepY={30} />
             <text x="280" y="18" className="lbl-svg" textAnchor="middle">
-              B = {(parseFloat(BField) || 0)} {['T','mT','μT'].find((_, i) => [1, 0.001, 0.000001][i] === BUnit) || 'T'}
+              B = {parseFloat(BField) || 0} {['T','mT','μT'][[1,0.001,0.000001].indexOf(BUnit)] ?? 'T'}
             </text>
 
-            {/* ── Línea divisoria ── */}
+            {/* Línea divisoria */}
             <line x1="180" y1="0" x2="180" y2="200"
               stroke="var(--accent)" strokeWidth="1.5" strokeDasharray="6 3" opacity="0.5" />
 
-            {/* ── Bobina animada (con clipPath para que no se desborde) ── */}
-            <g clipPath="url(#svgClip)" style={{ animation: `p1-move ${animDuration}s cubic-bezier(0.4,0,0.6,1) infinite` }}>
-              {/* Cuerpo */}
+            {/* Bobina animada */}
+            <g clipPath="url(#p1-clip)"
+              style={{ animation: `p1-move ${totalDuration}s linear infinite` }}>
               <rect className="coil-fill"
-                x={coilStartX - wpx / 2} y={cy - hpx / 2}
-                width={wpx} height={hpx}
-              />
-              {/* Líneas internas = vueltas */}
+                x={coilStartX - wpx / 2} y={cy - hpx / 2} width={wpx} height={hpx} />
               {Array.from({ length: nLines }).map((_, i) => {
                 const yLine = (cy - hpx / 2) + ((i + 1) * hpx) / (nLines + 1);
-                return (
-                  <line key={i}
-                    x1={coilStartX - wpx / 2 + 3} y1={yLine}
-                    x2={coilStartX + wpx / 2 - 3} y2={yLine}
-                    stroke="var(--accent-2)" strokeWidth="1" opacity="0.5"
-                  />
-                );
+                return <line key={i}
+                  x1={coilStartX - wpx / 2 + 3} y1={yLine}
+                  x2={coilStartX + wpx / 2 - 3} y2={yLine}
+                  stroke="var(--accent-2)" strokeWidth="1" opacity="0.5" />;
               })}
-              {/* Label N */}
               <text x={coilStartX} y={cy - hpx / 2 - 6}
-                className="lbl-svg" textAnchor="middle"
-                fill="var(--accent-2)" fontWeight="700">
+                className="lbl-svg" textAnchor="middle" fill="var(--accent-2)" fontWeight="700">
                 N = {Math.round(N)}
               </text>
-              {/* Flecha de dirección */}
+              {/* Flecha de movimiento */}
               <g opacity="0.85">
-                <line
-                  x1={coilStartX + wpx / 2 + 5} y1={cy}
+                <line x1={coilStartX + wpx / 2 + 5} y1={cy}
                   x2={coilStartX + wpx / 2 + 22} y2={cy}
-                  stroke="var(--accent)" strokeWidth="2"
-                />
-                <polygon
-                  points={`
-                    ${coilStartX + wpx / 2 + 18},${cy - 4}
-                    ${coilStartX + wpx / 2 + 26},${cy}
-                    ${coilStartX + wpx / 2 + 18},${cy + 4}
-                  `}
-                  fill="var(--accent)"
-                />
+                  stroke="var(--accent)" strokeWidth="2" />
+                <polygon points={`
+                  ${coilStartX + wpx / 2 + 18},${cy - 4}
+                  ${coilStartX + wpx / 2 + 26},${cy}
+                  ${coilStartX + wpx / 2 + 18},${cy + 4}`}
+                  fill="var(--accent)" />
               </g>
             </g>
 
-            {/* ── fem pulsante — aparece cuando la bobina entra al campo ── */}
-            <g style={{ animation: `p1-fem ${animDuration}s cubic-bezier(0.4,0,0.6,1) infinite` }}>
-              <text x="280" y="110" className="lbl-svg"
-                textAnchor="middle" fill="var(--accent-3)"
-                fontWeight="700" fontSize="13">
-                ε = fem
-              </text>
-              <text x="280" y="126" className="lbl-svg"
-                textAnchor="middle" fill="var(--accent-3)" fontSize="10">
-                inducida ↯
-              </text>
+            {/* ── ESTADO: cruzando → ε activa (verde/naranja) ── */}
+            <g style={{ animation: `p1-fem-crossing ${totalDuration}s linear infinite` }}>
+              <rect x="182" y="2" width="196" height="196" rx="4"
+                fill="none" stroke="var(--accent)" strokeWidth="2.5" opacity="0.9"
+                strokeDasharray="0" />
+              <text x="280" y="100" className="lbl-svg" textAnchor="middle"
+                fill="var(--accent)" fontWeight="700" fontSize="13">ε ≠ 0</text>
+              <text x="280" y="116" className="lbl-svg" textAnchor="middle"
+                fill="var(--accent)" fontSize="10">↯ fem inducida</text>
+              <text x="280" y="130" className="lbl-svg" textAnchor="middle"
+                fill="var(--accent)" fontSize="9">flujo está cambiando</text>
+            </g>
+
+            {/* ── ESTADO: adentro → ε = 0 (gris, flujo constante) ── */}
+            <g style={{ animation: `p1-fem-inside ${totalDuration}s linear infinite` }}>
+              <rect x="182" y="2" width="196" height="196" rx="4"
+                fill="none" stroke="var(--ink-dim)" strokeWidth="1.5" opacity="0.6"
+                strokeDasharray="4 4" />
+              <text x="280" y="100" className="lbl-svg" textAnchor="middle"
+                fill="var(--ink-dim)" fontWeight="700" fontSize="13">ε = 0</text>
+              <text x="280" y="116" className="lbl-svg" textAnchor="middle"
+                fill="var(--ink-dim)" fontSize="10">flujo constante</text>
+              <text x="280" y="130" className="lbl-svg" textAnchor="middle"
+                fill="var(--ink-dim)" fontSize="9">sin variación → sin fem</text>
             </g>
 
             <style>{`
-              /*
-                Ciclo total = animDuration + 2s de pausa fija.
-                La bobina ocupa el 50% del tiempo moviéndose,
-                luego hay 30% de pausa con fem visible,
-                luego fade-out y reset.
-              */
+              /* Bobina: cruza de izq a der, pausa adentro, reset */
               @keyframes p1-move {
-                0%   { transform: translateX(0px);                         opacity: 1;   }
-                40%  { transform: translateX(${coilEndX - coilStartX}px);  opacity: 1;   }
-                70%  { transform: translateX(${coilEndX - coilStartX}px);  opacity: 1;   }
-                80%  { transform: translateX(${coilEndX - coilStartX}px);  opacity: 0;   }
-                81%  { transform: translateX(0px);                         opacity: 0;   }
-                90%  { transform: translateX(0px);                         opacity: 1;   }
-                100% { transform: translateX(0px);                         opacity: 1;   }
+                0%            { transform: translateX(0px);       opacity: 1; }
+                ${cruzandoPct}%  { transform: translateX(${travel}px); opacity: 1; }
+                ${dentroEndPct}% { transform: translateX(${travel}px); opacity: 1; }
+                ${resetPct}%     { transform: translateX(${travel}px); opacity: 0; }
+                ${parseFloat(resetPct) + 0.1}% { transform: translateX(0px); opacity: 0; }
+                ${reaparecePct}% { transform: translateX(0px);    opacity: 1; }
+                100%          { transform: translateX(0px);       opacity: 1; }
               }
-              /* fem: aparece cuando la bobina llega al campo y se mantiene durante la pausa */
-              @keyframes p1-fem {
-                0%   { opacity: 0; }
-                38%  { opacity: 0; }
-                45%  { opacity: 1; }
-                70%  { opacity: 1; }
-                80%  { opacity: 0; }
-                100% { opacity: 0; }
+              /* Borde naranja + ε≠0: visible SOLO mientras cruza */
+              @keyframes p1-fem-crossing {
+                0%               { opacity: 0; }
+                2%               { opacity: 0; }
+                5%               { opacity: 1; }
+                ${parseFloat(cruzandoPct) - 2}% { opacity: 1; }
+                ${cruzandoPct}%  { opacity: 0; }
+                100%             { opacity: 0; }
+              }
+              /* Borde gris + ε=0: visible SOLO cuando está adentro */
+              @keyframes p1-fem-inside {
+                0%               { opacity: 0; }
+                ${cruzandoPct}%  { opacity: 0; }
+                ${parseFloat(cruzandoPct) + 3}% { opacity: 1; }
+                ${dentroEndPct}% { opacity: 1; }
+                ${parseFloat(dentroEndPct) + 2}% { opacity: 0; }
+                100%             { opacity: 0; }
               }
             `}</style>
           </svg>
@@ -242,51 +234,27 @@ export default function Problem1() {
         </div>
 
         <GraphLegend items={[
-          {
-            symbol: '▭',
-            color: 'var(--accent-2)',
-            label: 'Rectángulo (bobina)',
-            description: 'Representa la bobina de N vueltas. Su ancho escala con el lado a y su alto con el lado b. Las líneas horizontales internas indican la cantidad de vueltas (1 línea cada 10 vueltas).',
-          },
-          {
-            symbol: '⊙',
-            color: 'var(--accent-3)',
-            label: 'Puntos del campo B',
-            description: 'Cada punto representa el campo magnético B saliendo del plano (convención ⊙ = sale hacia vos). El tamaño y la opacidad de los puntos crecen con la intensidad de B. El pulso indica que el campo está presente y activo.',
-          },
-          {
-            symbol: '→',
-            color: 'var(--accent)',
-            label: 'Flecha de movimiento',
-            description: 'Indica la dirección de desplazamiento de la bobina. La animación muestra la bobina entrando a la zona con campo: la velocidad del movimiento es proporcional a 1/Δt (menos tiempo = más rápido).',
-          },
-          {
-            symbol: 'ε',
-            color: 'var(--accent-3)',
-            label: 'fem inducida',
-            description: 'Aparece cuando la bobina ingresa a la zona con campo B. Representa la fuerza electromotriz inducida por el cambio de flujo magnético (Ley de Faraday: ε = N·B·A/Δt).',
-          },
-          {
-            symbol: '|',
-            color: 'var(--accent)',
-            label: 'Línea divisoria',
-            description: 'Separa la zona sin campo (B=0, izquierda) de la zona con campo (B≠0, derecha). Es el instante donde comienza a cambiar el flujo y se induce la fem.',
-          },
+          { symbol: '▭', color: 'var(--accent-2)', label: 'Bobina',
+            description: 'Bobina de N vueltas. Ancho = lado a, alto = lado b. Líneas internas = vueltas.' },
+          { symbol: '⊙', color: 'var(--accent-3)', label: 'Campo B',
+            description: 'Campo magnético saliendo del plano. Tamaño proporcional a la intensidad de B.' },
+          { symbol: '⚡', color: 'var(--accent)', label: 'ε ≠ 0 (borde naranja)',
+            description: 'Aparece SOLO mientras la bobina cruza la frontera. El flujo cambia → hay fem inducida.' },
+          { symbol: '○', color: 'var(--ink-dim)', label: 'ε = 0 (borde gris)',
+            description: 'Aparece cuando la bobina está completamente adentro. Flujo constante → fem = 0.' },
+          { symbol: '|', color: 'var(--accent)', label: 'Frontera',
+            description: 'Límite entre la zona sin campo y la zona con campo B.' },
         ]} />
       </div>
 
       <div className="output-block">
-        <LiveResult
-          label="fem inducida"
-          value={calc?.fem ?? null}
-          unit="V"
+        <LiveResult label="fem inducida" value={calc?.fem ?? null} unit="V"
           rows={calc ? [
             { label: 'Área A = a·b', value: calc.A, unit: 'm²' },
             { label: 'ΔΦ por espira', value: calc.dPhi, unit: 'Wb' },
             { label: 'Flujo total enlazado', value: N * calc.dPhi, unit: 'Wb' },
             { label: 'ε = N·ΔΦ/Δt', value: calc.fem, unit: 'V' },
-          ] : []}
-        />
+          ] : []} />
         {calc && <CheckPanel expected={calc.fem} unitOptions={FEM_UNITS} placeholder="tu valor de ε" />}
       </div>
     </div>
