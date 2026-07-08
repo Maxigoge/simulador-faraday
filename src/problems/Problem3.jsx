@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import SliderControl from '../components/SliderControl.jsx';
 import LiveResult from '../components/LiveResult.jsx';
 import CheckPanel from '../components/CheckPanel.jsx';
@@ -10,47 +10,98 @@ const DEFAULTS = {
 };
 
 const DBDT_UNITS = [
-  { label: 'T/s', value: '1' },
-  { label: 'mT/s', value: '0.001' },
+  { label: 'T/s',  value: '1'        },
+  { label: 'mT/s', value: '0.001'    },
   { label: 'μT/s', value: '0.000001' },
 ];
 
-/**
- * FieldLines — Líneas de campo que se juntan a medida que B aumenta.
- * nLines: cantidad de líneas (proporcional a dBdt)
- * Cada línea va de arriba a abajo del SVG, distribuidas horizontalmente.
- * Se animan: van apareciendo nuevas líneas que "se acercan" a las existentes.
- */
-function FieldLines({ nLines, animDuration }) {
-  // Región del SVG donde se dibujan las líneas: x de 10 a 370, y de 15 a 185
-  const xMin = 15, xMax = 365, yTop = 15, yBot = 185;
-  const totalLines = Math.max(nLines, 2);
+// SVG region para las líneas de campo
+const FL_X_MIN = 12;
+const FL_X_MAX = 368;
+const FL_Y_TOP = 14;
+const FL_Y_BOT = 186;
+const FL_WIDTH  = FL_X_MAX - FL_X_MIN;   // 356 px
 
-  // Distribuir líneas uniformemente
-  const lines = Array.from({ length: totalLines }, (_, i) => {
-    const x = xMin + (i / (totalLines - 1)) * (xMax - xMin);
-    return x;
+// Máximo de líneas visibles simultáneamente
+const MAX_LINES = 20;
+const MIN_LINES = 3;
+
+/**
+ * GrowingFieldLines — Líneas de campo verticales y quietas.
+ * La densidad aumenta progresivamente a una velocidad proporcional a dBdt.
+ * Cuando llega al máximo, hace un reset suave de vuelta al mínimo (ciclo).
+ * dBdt = 0 → líneas quietas (B constante, sin cambio)
+ * dBdt alto → las líneas aparecen rápido (B crece rápido)
+ */
+function GrowingFieldLines({ dBdt }) {
+  // nLines: número actual de líneas, empieza en MIN_LINES y crece hasta MAX_LINES
+  const [nLines, setNLines] = useState(MIN_LINES);
+  const rafRef   = useRef(null);
+  const lastRef  = useRef(null);
+  const nRef     = useRef(MIN_LINES);
+
+  // Velocidad de crecimiento: líneas por segundo
+  // dBdt=0 → 0 líneas/s (quieto)
+  // dBdt=1 T/s → 1 línea/s
+  // dBdt=10 T/s → 6 líneas/s
+  const linesPerSec = Math.min(dBdt * 0.6, 6);
+
+  useEffect(() => {
+    cancelAnimationFrame(rafRef.current);
+    lastRef.current = null;
+
+    if (linesPerSec <= 0) {
+      // B constante — mostrar densidad fija media
+      setNLines(MIN_LINES);
+      nRef.current = MIN_LINES;
+      return;
+    }
+
+    const tick = (ts) => {
+      if (lastRef.current === null) lastRef.current = ts;
+      const dt = Math.min((ts - lastRef.current) / 1000, 0.05);
+      lastRef.current = ts;
+
+      nRef.current = nRef.current + linesPerSec * dt;
+
+      if (nRef.current >= MAX_LINES) {
+        // Reset suave: volver al mínimo
+        nRef.current = MIN_LINES;
+      }
+
+      setNLines(Math.round(nRef.current));
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [linesPerSec]);
+
+  // Distribuir nLines líneas uniformemente en el ancho
+  const lines = Array.from({ length: nLines }, (_, i) => {
+    if (nLines === 1) return FL_X_MIN + FL_WIDTH / 2;
+    return FL_X_MIN + (i / (nLines - 1)) * FL_WIDTH;
   });
+
+  const arrowY = FL_Y_TOP + (FL_Y_BOT - FL_Y_TOP) * 0.38;
 
   return (
     <g>
       {lines.map((x, i) => (
-        <line key={i}
-          x1={x} y1={yTop} x2={x} y2={yBot}
-          stroke="var(--accent-3)"
-          strokeWidth="1.5"
-          opacity="0.55"
-          style={{
-            animation: `p3-field-line ${animDuration}s ease-in-out ${(-i / totalLines * animDuration).toFixed(2)}s infinite`,
-          }}
-        />
-      ))}
-      {/* Flechas en cada línea indicando dirección del campo (saliente = hacia el lector) */}
-      {lines.map((x, i) => (
-        <polygon key={`arr-${i}`}
-          points={`${x - 4},${yTop + 55} ${x},${yTop + 45} ${x + 4},${yTop + 55}`}
-          fill="var(--accent-3)" opacity="0.6"
-        />
+        <g key={i}>
+          <line
+            x1={x} y1={FL_Y_TOP}
+            x2={x} y2={FL_Y_BOT}
+            stroke="var(--accent-3)"
+            strokeWidth="1.5"
+            opacity="0.6"
+          />
+          <polygon
+            points={`${x - 4},${arrowY - 6} ${x},${arrowY + 4} ${x + 4},${arrowY - 6}`}
+            fill="var(--accent-3)"
+            opacity="0.75"
+          />
+        </g>
       ))}
     </g>
   );
@@ -73,7 +124,7 @@ export default function Problem3() {
     const RSI = parseFloat(R) * RUnit;
     const ISI = parseFloat(I) * IUnit;
     if ([N, aSI, bSI, RSI, ISI].some((v) => isNaN(v)) || N <= 0 || RSI <= 0) return null;
-    const A = aSI * bSI;
+    const A   = aSI * bSI;
     const fem = ISI * RSI;
     const dBdt = fem / (N * A);
     return { A, fem, dBdt };
@@ -87,32 +138,31 @@ export default function Problem3() {
     setI(DEFAULTS.I); setIUnit(DEFAULTS.IUnit);
   };
 
-  // Cantidad de líneas de campo: proporcional a dBdt (más dBdt = B más intenso = más líneas)
-  // Rango: 3 líneas (dBdt≈0) a 18 líneas (dBdt≥10 T/s)
   const dBdt = calc?.dBdt ?? 0;
-  const nFieldLines = Math.round(3 + Math.min(dBdt / 10, 1) * 15);
 
-  // Velocidad de la animación de las líneas según I
-  const ISI = parseFloat(I) * IUnit || 0.1;
-  const IClamp = Math.min(Math.max(ISI, 0.001), 10);
-  const fieldAnimDuration = (2.5 - ((IClamp - 0.001) / 9.999) * 2.0).toFixed(2);
-
-  // Grosor y opacidad de la flecha de corriente según R e I
-  const RSI = parseFloat(R) * RUnit || 8;
-  const RClamp = Math.min(Math.max(RSI, 0.1), 200);
-  const arrowWidth = 1.5 + ((Math.log(RClamp) - Math.log(0.1)) / (Math.log(200) - Math.log(0.1))) * 2.5;
-  const arrowOpacity = 0.35 + ((IClamp - 0.001) / 9.999) * 0.6;
-
-  // Bobina SVG — escala con a y b
-  const aSI = parseFloat(a) * aUnit || 0.05;
-  const bSI = parseFloat(b) * bUnit || 0.08;
+  // Bobina SVG
+  const aSI   = parseFloat(a) * aUnit || 0.05;
+  const bSI   = parseFloat(b) * bUnit || 0.08;
   const aClamp = Math.min(Math.max(aSI, 0.005), 0.50);
   const bClamp = Math.min(Math.max(bSI, 0.005), 0.50);
-  const wpx = 16 + ((aClamp - 0.005) / 0.495) * (120 - 16);
-  const hpx = 16 + ((bClamp - 0.005) / 0.495) * (100 - 16);
-  const cx = 190, cy = 105;
-  const rx = cx - wpx / 2, ry = cy - hpx / 2;
+  const wpx  = 16 + ((aClamp - 0.005) / 0.495) * (120 - 16);
+  const hpx  = 16 + ((bClamp - 0.005) / 0.495) * (100 - 16);
+  const cx   = 190, cy = 105;
+  const rx   = cx - wpx / 2, ry = cy - hpx / 2;
   const nLines = Math.min(Math.max(Math.round(parseFloat(N) / 10), 1), 12);
+
+  // Flecha de corriente
+  const ISI    = parseFloat(I) * IUnit || 0.1;
+  const IClamp = Math.min(Math.max(ISI, 0.001), 10);
+  const RSI    = parseFloat(R) * RUnit || 8;
+  const RClamp = Math.min(Math.max(RSI, 0.1), 200);
+  const arrowWidth   = 1.5 + ((Math.log(RClamp) - Math.log(0.1)) / (Math.log(200) - Math.log(0.1))) * 2.5;
+  const arrowOpacity = 0.35 + ((IClamp - 0.001) / 9.999) * 0.6;
+  const arrowAnimDur = (2.5 - ((IClamp - 0.001) / 9.999) * 2.0).toFixed(2);
+
+  const dBdtLabel = dBdt === 0 ? 'B constante'
+    : dBdt < 1 ? `dB/dt = ${(dBdt * 1000).toFixed(1)} mT/s`
+    : `dB/dt = ${dBdt.toFixed(2)} T/s`;
 
   return (
     <div className="card has-two-cols">
@@ -121,8 +171,8 @@ export default function Problem3() {
         <h2 className="card-title">¿Con qué rapidez debe cambiar B?</h2>
         <p className="card-desc">
           Bobina rectangular de N vueltas, perpendicular a B variable, con resistencia R.
-          Las líneas de campo se juntan a medida que B aumenta — más líneas por unidad
-          de área = mayor intensidad. Hallar dB/dt para que circule la corriente I.
+          Las líneas de campo se desplazan mostrando que B está aumentando —
+          más rápido = mayor dB/dt. Hallar dB/dt para que circule la corriente I.
         </p>
         <details>
           <summary>Fórmulas</summary>
@@ -138,28 +188,31 @@ export default function Problem3() {
           <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <clipPath id="p3-clip">
-                <rect x="10" y="10" width="360" height="180" />
+                <rect x={FL_X_MIN} y={FL_Y_TOP}
+                  width={FL_WIDTH} height={FL_Y_BOT - FL_Y_TOP} />
               </clipPath>
             </defs>
 
-            {/* Fondo del campo */}
-            <rect x="10" y="10" width="360" height="180" rx="4"
-              fill="var(--svg-bg)" stroke="var(--svg-stroke)"
-              strokeWidth="1" strokeDasharray="3 3" />
+            {/* Fondo */}
+            <rect x={FL_X_MIN} y={FL_Y_TOP}
+              width={FL_WIDTH} height={FL_Y_BOT - FL_Y_TOP}
+              rx="4" fill="var(--svg-bg)"
+              stroke="var(--svg-stroke)" strokeWidth="1" strokeDasharray="3 3" />
 
-            {/* Líneas de campo — cantidad proporcional a dBdt */}
+            {/* Líneas de campo creciendo en densidad */}
             <g clipPath="url(#p3-clip)">
-              <FieldLines nLines={nFieldLines} animDuration={parseFloat(fieldAnimDuration)} />
+              <GrowingFieldLines dBdt={dBdt} />
             </g>
 
-            {/* Label de intensidad */}
-            <text x="190" y="196" className="lbl-svg" textAnchor="middle"
-              fill="var(--accent-3)" opacity="0.8" fontWeight="700">
-              {nFieldLines} líneas — B {''}
-              {dBdt > 0 ? `aumentando (dB/dt = ${dBdt < 1 ? (dBdt * 1000).toFixed(1) + ' mT/s' : dBdt.toFixed(2) + ' T/s'})` : 'constante'}
+            {/* Label */}
+            <text x="190" y="198" className="lbl-svg" textAnchor="middle"
+              fill="var(--accent-3)" opacity="0.85" fontWeight="700">
+              {dBdt === 0
+                ? 'B constante — densidad de líneas fija'
+                : `B creciendo a ${dBdtLabel} — líneas aparecen ${ dBdt < 2 ? 'despacio' : dBdt < 6 ? 'moderado' : 'rápido'}`}
             </text>
 
-            {/* Bobina centrada */}
+            {/* Bobina */}
             <rect className="coil-fill" x={rx} y={ry} width={wpx} height={hpx} />
             {Array.from({ length: nLines }).map((_, i) => {
               const yLine = ry + ((i + 1) * hpx) / (nLines + 1);
@@ -176,26 +229,24 @@ export default function Problem3() {
               {(aSI * 100).toFixed(1)}cm × {(bSI * 100).toFixed(1)}cm
             </text>
 
-            {/* Flecha de corriente inducida */}
+            {/* Corriente inducida */}
             <g stroke="var(--accent)" strokeWidth={arrowWidth.toFixed(2)} fill="none"
               opacity={arrowOpacity.toFixed(2)}
-              style={{ animation: `p3-current ${fieldAnimDuration}s ease-in-out infinite` }}>
+              style={{ animation: `p3-current ${arrowAnimDur}s ease-in-out infinite` }}>
               <path d={`M ${rx} ${ry + 6} Q ${cx} ${ry - 8} ${rx + wpx} ${ry + 6}`}
                 strokeLinecap="round" />
-              <polygon points={`${rx + wpx - 5},${ry + 3} ${rx + wpx + 3},${ry + 6} ${rx + wpx - 5},${ry + 9}`}
+              <polygon
+                points={`${rx + wpx - 5},${ry + 3} ${rx + wpx + 3},${ry + 6} ${rx + wpx - 5},${ry + 9}`}
                 fill="var(--accent)" stroke="none" />
             </g>
             <text x={cx} y={ry - 26} className="lbl-svg" textAnchor="middle"
               fill="var(--accent)" fontWeight="700" opacity={arrowOpacity.toFixed(2)}>
-              I = {ISI >= 1 ? ISI.toFixed(2) + ' A' : ISI >= 0.001 ? (ISI * 1000).toFixed(1) + ' mA' : (ISI * 1e6).toFixed(1) + ' μA'}
+              I = {ISI >= 1 ? ISI.toFixed(2) + ' A'
+                 : ISI >= 0.001 ? (ISI * 1000).toFixed(1) + ' mA'
+                 : (ISI * 1e6).toFixed(1) + ' μA'}
             </text>
 
             <style>{`
-              @keyframes p3-field-line {
-                0%   { opacity: 0.3; stroke-width: 1; }
-                50%  { opacity: 0.7; stroke-width: 2; }
-                100% { opacity: 0.3; stroke-width: 1; }
-              }
               @keyframes p3-current {
                 0%   { opacity: ${(arrowOpacity * 0.5).toFixed(2)}; }
                 50%  { opacity: ${Math.min(arrowOpacity + 0.15, 1).toFixed(2)}; }
@@ -224,25 +275,31 @@ export default function Problem3() {
 
         <GraphLegend items={[
           { symbol: '|', color: 'var(--accent-3)', label: 'Líneas de campo B',
-            description: 'Cada línea representa el campo magnético. Más líneas por unidad de área = B más intenso. La cantidad de líneas aumenta con dB/dt calculado — así se visualiza que B está creciendo.' },
-          { symbol: '↑', color: 'var(--accent-3)', label: 'Flecha en cada línea',
-            description: 'Indica la dirección del campo B (saliente, hacia el lector). El pulso de intensidad va al ritmo de la corriente I.' },
+            description: 'Representan el campo magnético. La densidad (cantidad de líneas por unidad de área) es proporcional a la intensidad de B. A mayor dB/dt, las líneas aparecen más rápido — B está creciendo velozmente. Si dBdt=0, la densidad es fija (B constante).' },
+          { symbol: '↓', color: 'var(--accent-3)', label: 'Flecha en cada línea',
+            description: 'Indica la dirección del campo B (perpendicular al plano de la bobina, hacia el lector).' },
           { symbol: '▭', color: 'var(--accent-2)', label: 'Bobina',
-            description: 'Bobina de N vueltas. Ancho = a, alto = b. Las líneas internas representan las vueltas.' },
+            description: 'N vueltas perpendiculares a B. Ancho = a, alto = b. Líneas internas = vueltas.' },
           { symbol: '↺', color: 'var(--accent)', label: 'Corriente inducida I',
-            description: 'La corriente que circula por la bobina debido a la fem inducida. Opacidad proporcional a I, grosor proporcional a R.' },
+            description: 'Circula porque el flujo a través de la bobina está cambiando. Opacidad ∝ I, grosor ∝ R.' },
         ]} />
       </div>
 
       <div className="output-block">
         <LiveResult label="dB/dt necesario" value={calc?.dBdt ?? null} unit="T/s"
           rows={calc ? [
-            { label: 'Área A = a·b', value: calc.A, unit: 'm²' },
-            { label: 'ε = I·R', value: calc.fem, unit: 'V' },
-            { label: 'N·A', value: N * calc.A, unit: 'm²' },
-            { label: 'dB/dt = ε / (N·A)', value: calc.dBdt, unit: 'T/s' },
+            { label: 'Área A = a·b',       value: calc.A,    unit: 'm²'  },
+            { label: 'ε = I·R',            value: calc.fem,  unit: 'V'   },
+            { label: 'N·A',                value: N * calc.A, unit: 'm²' },
+            { label: 'dB/dt = ε / (N·A)',  value: calc.dBdt, unit: 'T/s' },
           ] : []} />
-        {calc && <CheckPanel expected={calc.dBdt} unitOptions={DBDT_UNITS} placeholder="tu valor de dB/dt" />}
+        {calc && (
+          <CheckPanel
+            expected={calc.dBdt}
+            unitOptions={DBDT_UNITS}
+            placeholder="tu valor de dB/dt"
+          />
+        )}
       </div>
     </div>
   );
