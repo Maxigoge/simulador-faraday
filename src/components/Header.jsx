@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+const FEEDBACK_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfV8074zFZlzwtSwioOXMt7rgRGJ5-IsaX6WSb4TgocjDLkXw/viewform?embedded=true';
 
 /**
  * Header — Header con eyebrow, título, descripción, toggle de tema y contador.
@@ -9,7 +11,21 @@ import React from 'react';
  *  - visits: number | null
  */
 export default function Header({ theme, onToggleTheme, visits }) {
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isFeedbackOpen) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setIsFeedbackOpen(false);
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [isFeedbackOpen]);
+
   return (
+    <>
     <header>
       <div className="header-row">
         <div style={{ flex: 1 }}>
@@ -24,21 +40,24 @@ export default function Header({ theme, onToggleTheme, visits }) {
           </p>
         </div>
 
-        {/* Controles superiores: visitas + toggle tema */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: '8px',
-          flexShrink: 0,
-          marginTop: '4px',
-        }}>
-          <div
-            className="theme-toggle"
-            role="button"
-            aria-label="Cambiar tema"
-            onClick={onToggleTheme}
-          />
+        {/* Controles superiores: sugerencias, tema y visitas */}
+        <div className="header-controls">
+          <div className="header-actions">
+              <button
+                className="feedback-button"
+                type="button"
+                onClick={() => setIsFeedbackOpen(true)}
+              >
+                Comentarios o sugerencias
+              </button>
+
+            <button
+              className="theme-toggle"
+              type="button"
+              aria-label={`Cambiar a tema ${theme === 'dark' ? 'claro' : 'oscuro'}`}
+              onClick={onToggleTheme}
+            />
+          </div>
           {visits !== null && visits !== undefined && (
             <div style={{
               fontFamily: "'JetBrains Mono', monospace",
@@ -66,5 +85,41 @@ export default function Header({ theme, onToggleTheme, visits }) {
         </div>
       </div>
     </header>
+    {isFeedbackOpen && (
+      <div
+        className="feedback-modal-backdrop"
+        role="presentation"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setIsFeedbackOpen(false);
+        }}
+      >
+        <section
+          className="feedback-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="feedback-modal-title"
+        >
+          <div className="feedback-modal-header">
+            <h2 id="feedback-modal-title">Comentarios o sugerencias</h2>
+            <button
+              className="feedback-modal-close"
+              type="button"
+              aria-label="Cerrar formulario"
+              onClick={() => setIsFeedbackOpen(false)}
+            >
+              ×
+            </button>
+          </div>
+          <iframe
+            className="feedback-form"
+            src={FEEDBACK_FORM_URL}
+            title="Formulario de comentarios o sugerencias"
+          >
+            Cargando…
+          </iframe>
+        </section>
+      </div>
+    )}
+    </>
   );
 }
