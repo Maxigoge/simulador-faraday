@@ -31,8 +31,8 @@ export function Intro() {
       <h3>¿De qué formas puede variar el flujo?</h3>
       <p>Hay <strong>tres maneras</strong> de cambiar el flujo y producir fem:</p>
       <ol>
-        <li><em>Cambia B</em> — el campo se hace más fuerte o más débil con el tiempo (caso de los problemas 1 y 3).</li>
-        <li><em>Cambia A</em> — la espira se deforma, crece, se achica, o entra/sale del campo (caso del problema 2).</li>
+        <li><em>Cambia B</em> — el campo se hace más fuerte o más débil con el tiempo (caso del problema 3).</li>
+        <li><em>Cambia A efectiva</em> — la espira se deforma, crece, se achica, o cambia la porción que está dentro del campo (casos de los problemas 1 y 2).</li>
         <li><em>Cambia θ</em> — la espira rota respecto al campo (generadores eléctricos).</li>
       </ol>
 
@@ -93,7 +93,7 @@ export function Faraday() {
       <h3>fem promedio vs instantánea</h3>
       <p>Cuando un problema te pide la <em>fem promedio</em> en un intervalo Δt, usás:</p>
       <div className="fnote"><span className="formula">ε_prom = N · |ΔΦ| / Δt</span></div>
-      <p>Esto es lo que usás en los Problemas 1, 2 y 3 de la guía: variaciones finitas, no derivadas instantáneas.</p>
+      <p>Esta forma promedio se usa directamente en el Problema 1. En los Problemas 2 y 3 se conocen las tasas de cambio dA/dt y dB/dt, por lo que se usan las formas derivadas correspondientes.</p>
     </>
   );
 }
@@ -230,7 +230,7 @@ export function P3() {
 
       <div className="key">
         <b>Resultado:</b> dB/dt ≈ 2.67 T/s<br />
-        <b>Idea para explicar:</b> "Necesito 0.8 V de fem (por Ohm), y como tengo 75 vueltas con 4 cm² de área cada una, necesito que B varíe a 2.67 T por segundo. Es un cambio rápido, pero alcanzable con un electroimán al que se le varía la corriente."
+        <b>Idea para explicar:</b> "Necesito 0.8 V de fem (por Ohm), y como tengo 75 vueltas con 40 cm² de área cada una, necesito que B varíe a 2.67 T por segundo. Es un cambio rápido, pero alcanzable con un electroimán al que se le varía la corriente."
       </div>
 
       <h3>¿Por qué dB/dt en T/s?</h3>
