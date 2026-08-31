@@ -419,10 +419,10 @@ export default function Problem1() {
               Valor calculado (al cruzar la frontera)
             </div>
             {[
-              { label: 'ε = N·B·a·v', value: fmtUnit(calc.fem, 'V') },
-              { label: 'Δt = b/v', value: fmtUnit(calc.dt, 's') },
+              { label: 'Fem inducida ε = N·B·a·v', value: fmtUnit(calc.fem, 'V') },
+              { label: 'Tiempo de cruce Δt = b/v', value: fmtUnit(calc.dt, 's') },
               { label: 'Área A = a·b', value: fmtUnit(calc.A, 'm²') },
-              { label: 'ΔΦ = B·A', value: fmtUnit(calc.dPhi, 'Wb') },
+              { label: 'Variación de flujo ΔΦ = B·A', value: fmtUnit(calc.dPhi, 'Wb') },
             ].map((r, i) => (
               <div key={i} style={{
                 display: 'flex', justifyContent: 'space-between',

@@ -22,11 +22,31 @@ const PREFIXES = [
   { f: 1e-12, s: 'p' },
 ];
 
+const AREA_PREFIXES = [
+  { f: 1e9, s: 'G' },
+  { f: 1e6, s: 'M' },
+  { f: 1e3, s: 'k' },
+  { f: 1, s: '' },
+  { f: 1e-2, s: 'c' },
+  { f: 1e-3, s: 'm' },
+  { f: 1e-6, s: 'μ' },
+  { f: 1e-9, s: 'n' },
+  { f: 1e-12, s: 'p' },
+];
+
+function unitScale(unitBase) {
+  if (unitBase.includes('²')) return { power: 2, prefixes: AREA_PREFIXES };
+  if (unitBase.includes('³')) return { power: 3, prefixes: PREFIXES };
+  return { power: 1, prefixes: PREFIXES };
+}
+
 export function fmtUnit(value, unitBase) {
   const abs = Math.abs(value);
   if (abs === 0) return `0 ${unitBase}`;
-  for (const p of PREFIXES) {
-    if (abs >= p.f) return `${fmt(value / p.f, 3)} ${p.s}${unitBase}`;
+  const { power, prefixes } = unitScale(unitBase);
+  for (const p of prefixes) {
+    const factor = p.f ** power;
+    if (abs >= factor) return `${fmt(value / factor, 3)} ${p.s}${unitBase}`;
   }
   return `${value.toExponential(3)} ${unitBase}`;
 }
@@ -38,9 +58,11 @@ export function fmtUnit(value, unitBase) {
 export function splitUnit(value, unitBase) {
   const abs = Math.abs(value);
   if (abs === 0) return { num: '0', unit: unitBase };
-  for (const p of PREFIXES) {
-    if (abs >= p.f) {
-      const scaled = value / p.f;
+  const { power, prefixes } = unitScale(unitBase);
+  for (const p of prefixes) {
+    const factor = p.f ** power;
+    if (abs >= factor) {
+      const scaled = value / factor;
       const num = Math.abs(scaled) >= 100
         ? scaled.toFixed(1)
         : parseFloat(scaled.toPrecision(4)).toString();
